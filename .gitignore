@@ -21,3 +21,5 @@ lm_eval/caching/.cache
 wandb
 examples/wandb
 evaluation_data/
+*.csv
+results/

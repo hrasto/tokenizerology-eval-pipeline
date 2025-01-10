@@ -2,17 +2,19 @@
 
 MODEL_PATH=$1
 LR=${2:-5e-5}           # default: 5e-5
-PATIENCE=${3:-3}       # default: 3
+PATIENCE=${3:-10}       # default: 3
 BSZ=${4:-64}            # default: 64
 MAX_EPOCHS=${5:-10}     # default: 10
-SEED=${6:-12}           # default: 12
+SEED=${6:-13}           # default: 13
 
 # NOTE: if you've already run finetuning and just want to generate predictions,
 # you can set `--model_name_or_path "results/finetune/$model_basename/$TRAIN_NAME/"`
 # and remove the `--do_train` and `--do_eval` arguments.
 
 model_basename=$(basename $MODEL_PATH)
-for task in {boolq,cola,mnli,mnli-mm,mrpc,multirc,qnli,qqp,rte,sst2,wsc}; do
+for task in {boolq,cola,mrpc,multirc,qnli,qqp,rte,sst2,wsc,mnli,mnli-mm}; do
+# for task in {boolq,cola,mrpc,multirc,qnli,qqp,rte,sst2,wsc}; do
+# for task in {mrpc,}; do
 	if [[ $task = "mnli-mm" ]]; then
 		TRAIN_NAME="mnli"
 		VALID_NAME="mnli-mm"

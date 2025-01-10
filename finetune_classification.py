@@ -23,6 +23,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 import evaluate
+import os
 
 import datasets
 import numpy as np
@@ -236,7 +237,6 @@ def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
-
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
@@ -425,6 +425,9 @@ def main():
         trust_remote_code=model_args.trust_remote_code,
         ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
     )
+
+    os.environ["WANDB_PROJECT"] = "tokenizerology"
+    os.environ["WANDB_RUN_GROUP"] = f"finetune---{model_args.model_name_or_path}" 
 
     # Freeze all parameters (including embeddings) except the classifier head
     if model_args.freeze_model:
