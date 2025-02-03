@@ -32,9 +32,9 @@ class args_default:
     model_args:str = ''
     num_fewshot:int = None
     image_src_split:str = None
-    batch_size:int = 1
+    batch_size:int = 32
     max_batch_size:int = None
-    device:str = 'cpu'
+    device:str = 'cuda'
     limit = None
     use_cache = None
     check_integrity = False
@@ -85,7 +85,7 @@ def main(model_name, revision, tasks, out_file):
         
     with open(out_file, 'a') as f: 
         for task, res in results['results'].items(): 
-            line = f'{task},{model_name.split('/')[-1]},{revision},{res['acc,none']},{res['acc_stderr,none']}\n'
+            line = f'{task},{model_name.split("/")[-1]},{revision},{res["acc,none"]},{res["acc_stderr,none"]}\n'
             f.write(line)
             f.flush()
 

@@ -426,8 +426,19 @@ def main():
         ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
     )
 
-    os.environ["WANDB_PROJECT"] = "tokenizerology"
-    os.environ["WANDB_RUN_GROUP"] = f"finetune---{model_args.model_name_or_path}" 
+    actual_model_name = model_args.model_name_or_path
+    if actual_model_name.startswith('results'): 
+        # extract basename from a local model path 
+        actual_model_name = f"hrasto/{actual_model_name.split('/')[2]}"
+    try: # remove seed suffix
+        actual_model_name = actual_model_name[:actual_model_name.index('_seed')]
+    except ValueError: pass
+
+    os.environ["WANDB_PROJECT"] = "tokenizerology2"
+    os.environ["WANDB_RUN_GROUP"] = f"finetune---{actual_model_name}" 
+    # os.environ["WANDB_NAME"] = wandb_run_name
+    task_name = training_args.output_dir.split('/')[-2]
+    wandb_run_name = f"results/finetune/{actual_model_name.replace('hrasto/','')}/{task_name}/"
 
     # Freeze all parameters (including embeddings) except the classifier head
     if model_args.freeze_model:
@@ -535,6 +546,7 @@ def main():
         raw_datasets = raw_datasets.map(
             preprocess_function,
             batched=True,
+            batch_size=2048,
             load_from_cache_file=not data_args.overwrite_cache,
             desc="Running tokenizer on dataset",
         )
@@ -623,6 +635,7 @@ def main():
         training_args.metric_for_best_model = "accuracy"
         training_args.greater_is_better = True
 
+    training_args.run_name=wandb_run_name
     # Initialize our Trainer
     trainer = Trainer(
         model=model,
